@@ -27,6 +27,8 @@ type Mass  = Double
 var_G :: GravConst
 var_G = 6.674e-11
 
+-- | 'g_ker' [m/s^2] is acceleration due to gravity near Kerbin surface
+g_ker = 9.80665
 
 -- | 'semiMajor' calculates the semi major axis of an orbit.
 semiMajor   :: Orbit Body -> Double
@@ -59,16 +61,21 @@ hohmann o1 o2
       || o1 == o2
     = (0,0)
 hohmann o1 o2
-    = ( sqrt(mue/r1) * (sqrt((2*r2)/(r1+r2)) - 1) 
+    = ( sqrt(mue/r1) * (sqrt((2*r2)/(r1+r2)) - 1)
       , sqrt(mue/r2) * (1 - (sqrt((2*r1)/(r1+r2))))
       )
-    where 
+    where
       mue = var_G * (m . celestial . centerBody $ o1)
       r1 = (r . celestial . centerBody $ o1) + (apoapsis o1)
       r2 = (r . celestial . centerBody $ o2) + (apoapsis o2)
 
 
--- | 'tsky' computes delta v given specific impulse I_sp,
+-- | 'tsky' computes Tsiolkovsky delta v given specific impulse I_sp,
 -- standard gravity g as well as initial and final masses m_0 and m_f.
 tsky :: Gravity -> Isp -> Mass -> Mass -> DeltaV
 tsky g isp m_0 m_f = (g*isp)*log(m_0 / m_f)
+
+-- | `tskyKer` is a convenience function for 'tsky' with
+-- Kerbin acceleration assumed
+tskyKer :: Isp -> Mass -> Mass -> DeltaV
+tskyKer isp m_0 m_f = (g_ker*isp)*log(m_0 / m_f)
