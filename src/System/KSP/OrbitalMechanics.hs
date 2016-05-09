@@ -9,7 +9,10 @@ module System.KSP.OrbitalMechanics
 where
 
 import System.KSP.DataConstructors
+import System.KSP.Datatype.Body (DeltaV)
 
+type Gravity = Double
+type Isp = Double
 
 -- | 'Radius' of 'Orbit' at the current Position
 type Radius = Double 
@@ -17,6 +20,7 @@ type Radius = Double
 -- | 'Speed' is an alias for 'Double'
 type Speed  = Double
 
+type Mass  = Double
 
 -- | 'var_G' [Nm^2/kg^2] is the Gravitation constant in newton meter
 -- squared over kilo gramms squared
@@ -62,3 +66,9 @@ hohmann o1 o2
       mue = var_G * (m . celestial . centerBody $ o1)
       r1 = (r . celestial . centerBody $ o1) + (apoapsis o1)
       r2 = (r . celestial . centerBody $ o2) + (apoapsis o2)
+
+
+-- | 'tsky' computes delta v given specific impulse I_sp,
+-- standard gravity g as well as initial and final masses m_0 and m_f.
+tsky :: Gravity -> Isp -> Mass -> Mass -> DeltaV
+tsky g isp m_0 m_f = (g*isp)*log(m_0 / m_f)
